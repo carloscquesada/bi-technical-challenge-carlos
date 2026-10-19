@@ -19,13 +19,14 @@ The focus was not only on calculating the metrics, but also on reconciling incon
 | Metric | Result |
 |---|---:|
 | Customers | **26** |
-| Current ACV | **€15,461.54** |
-| Initial ACV | **€13,538.46** |
-| M1 user retention | **99.3%** |
-| M3 user retention | **96.6%** |
-| M6 user retention | **95.1%** |
+| Average current annual contract value per customer | **€15,461.54** |
+| Average initial annual contract value per customer | **€13,538.46** |
+| W1 user retention | **86.0%** |
+| W2 user retention | **85.7%** |
+| W4 user retention | **85.2%** |
+| W8 user retention | **84.1%** |
 
-Bonus finding: two paying customers representing **€36,000 of current contract value** showed no meaningful product activity across the three latest complete months.
+Bonus finding: two paying customers representing **€36,000 of estimated current contract value** showed no meaningful product activity across the three latest complete months.
 
 ---
 
@@ -57,14 +58,15 @@ The staging layer performs basic cleaning, normalization and type casting while 
 - `int_backend_users`
 - `int_organization_company_map`
 - `int_user_monthly_activity`
+- `int_user_weekly_activity`
 
-The intermediate layer handles reusable analytical logic such as cross-system identity resolution and meaningful monthly product activity.
+The intermediate layer handles reusable analytical logic such as cross-system identity resolution, intentional product activity and time-grained user activity.
 
 ### Marts
 
 - `mart_customers`
 - `mart_customer_contract_value`
-- `mart_user_retention`
+- `mart_user_weekly_retention`
 - `mart_customer_monthly_usage`
 
 The marts expose business-ready datasets at clearly defined grains for answering the challenge questions.
@@ -75,7 +77,7 @@ The marts expose business-ready datasets at clearly defined grains for answering
 
 ## 1. Customers
 
-**26 customers** based on the latest available dataset snapshot.
+**26 customers as of 8 February 2026**, the latest date available in the dataset.
 
 I define a customer as a HubSpot company with at least one Closed Won new-business deal.
 
@@ -111,33 +113,33 @@ Calculation:
 - 26 customers
 - €352,000 Closed Won new-business value
 - €50,000 Closed Won existing-business / upsell value
-- €402,000 estimated current contract value
+- €402,000 estimated current annual contract value
 
 `€402,000 / 26 = €15,461.54`
 
+For this challenge, I calculate current ACV including Closed Won existing-business and upsell deals.
+
 ### Average initial annual contract value per customer
 
-For comparison, the average initial new-business contract value is:
+For comparison, the new-business-only view is:
 
 **€13,538.46**
 
 `€352,000 / 26 = €13,538.46`
 
-I use current ACV as the primary metric because Closed Won existing-business deals are labelled as upsells and therefore appear to add contract value to existing customers.
-
 All Closed Won deals are denominated in EUR, so no currency conversion is required.
 
-The supplied data does not provide explicit contract duration, ARR, renewal or cancellation fields. I therefore assume that deal `amount` represents annual contract value and that Closed Won upsells are additive to the customer's existing annual contract value.
+The supplied data does not provide explicit contract duration, ARR, renewal or cancellation fields. I therefore assume that deal `amount` represents annual contract value and that Closed Won existing-business / upsell deals are additive to the customer's existing annual contract value.
 
 ---
 
 ## 3. User Retention
 
-I use monthly signup cohorts.
+I calculate weekly user retention based on intentional product activity.
 
-A user is considered retained when they perform at least one meaningful product action in the relevant month.
+Each weekly cohort consists of users who performed at least one intentional product action during that calendar week. Retention then measures what percentage of those same users perform at least one intentional product action again in subsequent weeks.
 
-### Meaningful product activity
+### Intentional product activity
 
 Included events:
 
@@ -151,7 +153,7 @@ Included events:
 - `LabelUpdated`
 - `LabelDeleted`
 
-I exclude authentication and account-management activity such as:
+I exclude system and account-management activity such as:
 
 - `TokenGenerated`
 - `UserCreated`
@@ -159,30 +161,27 @@ I exclude authentication and account-management activity such as:
 - `OrganizationCreated`
 - `OrganizationUpdated`
 
-These events do not necessarily represent meaningful product usage. In particular, `TokenGenerated` can represent authentication or session refresh activity and could therefore inflate retention.
+These events do not necessarily represent intentional product usage. In particular, `TokenGenerated` can represent authentication or session refresh activity and would therefore overstate retention.
 
-### Retention Results
+### Weekly retention results
 
-| Retention period | Retained users | Eligible users | Retention |
+| Retention period | Retained user-weeks | Eligible active user-weeks | Retention |
 |---|---:|---:|---:|
-| M1 | 147 | 148 | **99.3%** |
-| M3 | 142 | 147 | **96.6%** |
-| M6 | 117 | 123 | **95.1%** |
+| W1 | 4,398 | 5,113 | **86.0%** |
+| W2 | 4,288 | 5,001 | **85.7%** |
+| W3 | 4,198 | 4,891 | **85.8%** |
+| W4 | 4,078 | 4,784 | **85.2%** |
+| W8 | 3,659 | 4,351 | **84.1%** |
 
-- M1 = meaningful activity exactly one month after signup
-- M3 = meaningful activity exactly three months after signup
-- M6 = meaningful activity exactly six months after signup
+For example, W1 retention asks: of the users active in a given week, what percentage of those same users are active again one week later?
 
-The dataset ends on 8 February 2026. Because February is incomplete, January 2026 is treated as the latest complete activity month.
+The aggregate metrics are weighted by the number of active users in each eligible weekly cohort rather than taking a simple average of weekly percentages.
 
-Only cohorts for which the relevant retention period is fully observable are included in each aggregate metric. Unobservable future retention periods are represented as `NULL`, rather than incorrectly reporting them as 0%.
+Only cohorts for which the relevant future week exists in the dataset are included in each metric. Retention periods that are not yet observable are represented as `NULL` rather than incorrectly reporting them as 0%.
 
-As a secondary validation:
+The dataset ends on Sunday, 8 February 2026. Weekly cohorts use calendar weeks beginning on Monday, so the final cohort begins on 2 February 2026.
 
-- M1 retention for users belonging to paying customers: **100.0%**
-- M1 retention for users belonging to non-customer organizations: **95.0%**
-
-The overall retention levels are unusually high. I therefore validated the result using only meaningful product events rather than authentication or administrative activity. The high retention remained and is reported as a characteristic of the supplied dataset.
+Because this is exact-week retention, a later-period rate can occasionally be slightly higher than an earlier-period rate. For example, a user can be inactive in W2 and return in W3.
 
 ---
 
@@ -268,11 +267,11 @@ I established the grain of each model before joining data to avoid fan-out and d
 | `stg_hubspot_deals` | One HubSpot deal |
 | `stg_backend_events` | One backend product event |
 | `int_backend_users` | One backend user |
-| `int_organization_company_map` | One backend organization / HubSpot company mapping |
-| `int_user_monthly_activity` | One user × month |
+| `int_user_monthly_activity` | One user × month with meaningful activity |
+| `int_user_weekly_activity` | One user × week with intentional activity |
 | `mart_customers` | One paying customer |
 | `mart_customer_contract_value` | One paying customer |
-| `mart_user_retention` | One signup cohort |
+| `mart_user_weekly_retention` | One active-user weekly cohort |
 | `mart_customer_monthly_usage` | One paying customer × month with meaningful activity |
 
 ---
@@ -296,12 +295,13 @@ I established the grain of each model before joining data to avoid fan-out and d
 │   ├── intermediate/
 │   │   ├── int_backend_users.sql
 │   │   ├── int_organization_company_map.sql
-│   │   └── int_user_monthly_activity.sql
+│   │   ├── int_user_monthly_activity.sql
+│   │   └── int_user_weekly_activity.sql
 │   └── marts/
 │       ├── mart_customers.sql
 │       ├── mart_customer_contract_value.sql
 │       ├── mart_customer_monthly_usage.sql
-│       └── mart_user_retention.sql
+│       └── mart_user_weekly_retention.sql
 ```
 
 The raw `data/` directory is intentionally excluded from the submission ZIP. To run the project locally, create a `data/` directory and place the four supplied challenge CSV files inside it.
@@ -336,7 +336,7 @@ dbt show --select mart_customers --limit 5
 Example: inspect the retention mart:
 
 ```bash
-dbt show --select mart_user_retention --limit -1
+dbt show --select mart_user_weekly_retention --limit -1
 ```
 
 The project uses a local DuckDB database at:

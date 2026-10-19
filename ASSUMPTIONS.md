@@ -19,10 +19,12 @@ I therefore did not count these 11 as customers.
 
 The supplied data does not contain an explicit churn or contract-end field, so I assume a Closed Won new-business customer remains a customer unless there is evidence otherwise.
 
+“Today” is interpreted as 8 February 2026, the latest date present in the dataset.
+
 
 ## Q2 — ACV definition
 
-For this challenge, I interpret the requested ACV KPI as the average annual contract value per customer. I calculate both the average initial annual contract value and the average current annual contract value after Closed Won upsells.
+For this challenge, ACV is calculated including Closed Won existing-business and upsell deals in addition to the initial new-business contract value.
 
 The deal names identify the initial contracts as "Annual License", and I treat Closed Won existing-business / upsell deals as additive annual contract value.
 
@@ -40,9 +42,14 @@ The supplied data does not include explicit contract duration, renewal, cancella
 
 ## Q3 — User retention
 
-I define retention using monthly signup cohorts.
+Retention is calculated weekly.
 
-A user is considered active in a month when they perform at least one meaningful product action:
+A weekly cohort consists of all users who performed at least one intentional product action during that calendar week.
+
+A user is retained at W1, W2, W3, etc. when that same user performs at least one intentional product action exactly 1, 2, 3, etc. weeks after the cohort week.
+
+Intentional product actions include:
+
 - SearchCreated
 - SearchUpdated
 - SearchExecuted
@@ -53,24 +60,23 @@ A user is considered active in a month when they perform at least one meaningful
 - LabelUpdated
 - LabelDeleted
 
-I exclude authentication and account-management events such as TokenGenerated, UserCreated, UserUpdated, OrganizationCreated and OrganizationUpdated because these do not necessarily represent meaningful product usage.
+I exclude system and account-management events such as TokenGenerated, UserCreated, UserUpdated, OrganizationCreated and OrganizationUpdated because these do not necessarily represent intentional product usage.
 
-The dataset ends on 8 February 2026. Since February is incomplete, January 2026 is treated as the latest complete activity month.
+The dataset ends on Sunday, 8 February 2026. Weeks are grouped using Monday as the start of the calendar week.
 
-Retention is calculated as exact-month cohort retention:
-- M1 = active one month after signup
-- M3 = active three months after signup
-- M6 = active six months after signup
+Only cohorts with a fully observable future retention period are included in each aggregate metric. Future periods that cannot yet be observed are represented as NULL rather than 0%.
 
-Only cohorts with a fully observable retention period are included in each aggregate metric.
+Aggregate retention is weighted by cohort size.
 
-Results across eligible cohorts:
-- M1 retention: 99.3% (147 / 148)
-- M3 retention: 96.6% (142 / 147)
-- M6 retention: 95.1% (117 / 123)
+Results:
 
-As a secondary check, M1 retention is 100% among users belonging to paying customers and 95% among users belonging to non-customer organizations.
+- W1 retention: 86.0% (4,398 / 5,113 eligible active user-weeks)
+- W2 retention: 85.7% (4,288 / 5,001)
+- W3 retention: 85.8% (4,198 / 4,891)
+- W4 retention: 85.2% (4,078 / 4,784)
+- W8 retention: 84.1% (3,659 / 4,351)
 
+Because this is exact-week retention rather than continuous survival retention, later retention rates do not have to decrease monotonically. A user may skip one week and return in a later week.
 
 ## Bonus insight — Product engagement
 

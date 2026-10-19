@@ -138,10 +138,23 @@ models:
         data_tests:
           - not_null
 
-
-  - name: mart_user_retention
+  - name: int_user_weekly_activity
     columns:
-      - name: cohort_month
+      - name: user_id
+        data_tests:
+          - not_null
+
+      - name: organization_id
+        data_tests:
+          - not_null
+
+      - name: activity_week
+        data_tests:
+          - not_null
+
+  - name: mart_user_weekly_retention
+    columns:
+      - name: cohort_week
         data_tests:
           - not_null
           - unique
@@ -149,7 +162,6 @@ models:
       - name: cohort_size
         data_tests:
           - not_null
-
 
   - name: mart_customer_monthly_usage
     columns:
