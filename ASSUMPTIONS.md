@@ -36,3 +36,37 @@ Using this definition:
 For comparison, the average initial new-business contract value is €13,538.46.
 
 The supplied data does not include explicit contract duration, renewal, cancellation, or ARR fields, so this calculation assumes deal `amount` represents annual recurring contract value.
+
+
+## Q3 — User retention
+
+I define retention using monthly signup cohorts.
+
+A user is considered active in a month when they perform at least one meaningful product action:
+- SearchCreated
+- SearchUpdated
+- SearchExecuted
+- SearchExported
+- SearchResultAppraised
+- SearchResultFullTextAppraised
+- LabelCreated
+- LabelUpdated
+- LabelDeleted
+
+I exclude authentication and account-management events such as TokenGenerated, UserCreated, UserUpdated, OrganizationCreated and OrganizationUpdated because these do not necessarily represent meaningful product usage.
+
+The dataset ends on 8 February 2026. Since February is incomplete, January 2026 is treated as the latest complete activity month.
+
+Retention is calculated as exact-month cohort retention:
+- M1 = active one month after signup
+- M3 = active three months after signup
+- M6 = active six months after signup
+
+Only cohorts with a fully observable retention period are included in each aggregate metric.
+
+Results across eligible cohorts:
+- M1 retention: 99.3% (147 / 148)
+- M3 retention: 96.6% (142 / 147)
+- M6 retention: 95.1% (117 / 123)
+
+As a secondary check, M1 retention is 100% among users belonging to paying customers and 95% among users belonging to non-customer organizations.

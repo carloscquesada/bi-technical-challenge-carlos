@@ -86,6 +86,10 @@ models:
         data_tests:
           - not_null
 
+      - name: user_created_at
+        data_tests:
+          - not_null
+
   - name: int_organization_company_map
     columns:
       - name: organization_id
@@ -131,5 +135,17 @@ models:
           - not_null
 
       - name: current_contract_value
+        data_tests:
+          - not_null
+
+
+  - name: mart_user_retention
+    columns:
+      - name: cohort_month
+        data_tests:
+          - not_null
+          - unique
+
+      - name: cohort_size
         data_tests:
           - not_null
