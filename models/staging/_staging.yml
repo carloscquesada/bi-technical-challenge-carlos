@@ -1,0 +1,135 @@
+version: 2
+
+models:
+  - name: stg_hubspot_companies
+    columns:
+      - name: company_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg_hubspot_contacts
+    columns:
+      - name: contact_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: email
+        data_tests:
+          - not_null
+          - unique
+
+      - name: hubspot_company_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_hubspot_companies')
+                field: company_id
+
+      - name: lifecycle_stage
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['lead', 'opportunity', 'customer']
+
+  - name: stg_hubspot_deals
+    columns:
+      - name: deal_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: hubspot_company_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_hubspot_companies')
+                field: company_id
+
+      - name: deal_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['newbusiness', 'existing_business']
+
+  - name: stg_backend_events
+    columns:
+      - name: event_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: user_id
+        data_tests:
+          - not_null
+
+      - name: organization_id
+        data_tests:
+          - not_null
+
+  - name: int_backend_users
+    columns:
+      - name: user_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: email
+        data_tests:
+          - not_null
+          - unique
+
+      - name: organization_id
+        data_tests:
+          - not_null
+
+  - name: int_organization_company_map
+    columns:
+      - name: organization_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: hubspot_company_id
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_hubspot_companies')
+                field: company_id
+
+  - name: mart_customers
+    columns:
+      - name: company_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: organization_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: first_customer_close_date
+        data_tests:
+          - not_null
+
+
+  - name: mart_customer_contract_value
+    columns:
+      - name: company_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: initial_contract_value
+        data_tests:
+          - not_null
+
+      - name: current_contract_value
+        data_tests:
+          - not_null
