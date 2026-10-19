@@ -149,3 +149,22 @@ models:
       - name: cohort_size
         data_tests:
           - not_null
+
+
+  - name: mart_customer_monthly_usage
+    columns:
+      - name: company_id
+        data_tests:
+          - not_null
+
+      - name: activity_month
+        data_tests:
+          - not_null
+
+      - name: active_users
+        data_tests:
+          - not_null
+
+      - name: meaningful_events
+        data_tests:
+          - not_null

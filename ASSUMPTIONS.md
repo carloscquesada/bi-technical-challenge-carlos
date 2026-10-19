@@ -70,3 +70,19 @@ Results across eligible cohorts:
 - M6 retention: 95.1% (117 / 123)
 
 As a secondary check, M1 retention is 100% among users belonging to paying customers and 95% among users belonging to non-customer organizations.
+
+
+## Bonus insight — Product engagement
+
+For the customer-engagement analysis, I use the same meaningful product events as the retention calculation.
+
+The latest complete three-month period is November 2025 through January 2026.
+
+Two customers had zero meaningful events during all three months:
+
+- ZenithBio Oy: €24,000 current contract value, 5 backend users, last meaningful activity 2025-09-15
+- PrecisionRx Inc: €12,000 current contract value, 3 backend users, last meaningful activity 2025-09-29
+
+Together they represent €36,000 of current contract value.
+
+I treat this as a Customer Success review signal rather than evidence of churn. The dataset does not contain renewal dates, expected usage thresholds, contracted seats or qualitative account-health information.
