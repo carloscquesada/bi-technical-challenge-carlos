@@ -1,0 +1,9 @@
+flinn_bi_challenge:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: './flinn.duckdb'
+      schema: main
+      threads: 4
+    

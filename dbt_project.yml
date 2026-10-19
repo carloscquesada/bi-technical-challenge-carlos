@@ -1,0 +1,17 @@
+name: 'flinn_bi_challenge'
+version: '1.0.0'
+config-version: 2
+
+profile: 'flinn_bi_challenge'
+
+model-paths: ["models"]
+
+models:
+  flinn_bi_challenge:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+
