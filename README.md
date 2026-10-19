@@ -102,7 +102,7 @@ The supplied data has no explicit churn or contract-end field, so I assume Close
 
 ## 2. ACV
 
-### Current ACV
+### Average current annual contract value per customer
 
 **€15,461.54**
 
@@ -115,7 +115,7 @@ Calculation:
 
 `€402,000 / 26 = €15,461.54`
 
-### Initial ACV
+### Average initial annual contract value per customer
 
 For comparison, the average initial new-business contract value is:
 
@@ -273,7 +273,7 @@ I established the grain of each model before joining data to avoid fan-out and d
 | `mart_customers` | One paying customer |
 | `mart_customer_contract_value` | One paying customer |
 | `mart_user_retention` | One signup cohort |
-| `mart_customer_monthly_usage` | One paying customer × month |
+| `mart_customer_monthly_usage` | One paying customer × month with meaningful activity |
 
 ---
 
@@ -302,9 +302,9 @@ I established the grain of each model before joining data to avoid fan-out and d
 │       ├── mart_customer_contract_value.sql
 │       ├── mart_customer_monthly_usage.sql
 │       └── mart_user_retention.sql
-└── data/
-    └── raw CSV files (not included in submission ZIP)
 ```
+
+The raw `data/` directory is intentionally excluded from the submission ZIP. To run the project locally, create a `data/` directory and place the four supplied challenge CSV files inside it.
 
 ---
 

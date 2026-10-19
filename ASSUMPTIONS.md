@@ -22,7 +22,7 @@ The supplied data does not contain an explicit churn or contract-end field, so I
 
 ## Q2 — ACV definition
 
-I interpret ACV primarily as the current annual contract value per customer.
+For this challenge, I interpret the requested ACV KPI as the average annual contract value per customer. I calculate both the average initial annual contract value and the average current annual contract value after Closed Won upsells.
 
 The deal names identify the initial contracts as "Annual License", and I treat Closed Won existing-business / upsell deals as additive annual contract value.
 
