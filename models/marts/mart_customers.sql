@@ -49,4 +49,3 @@ left join backend b
 
 left join customer_contacts cc
     on c.company_id = cc.hubspot_company_id
-    

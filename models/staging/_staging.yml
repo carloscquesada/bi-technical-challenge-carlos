@@ -180,3 +180,55 @@ models:
       - name: meaningful_events
         data_tests:
           - not_null
+  - name: mart_user_retention_summary
+    columns:
+
+      - name: retention_period
+        data_tests:
+          - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values: ['W1', 'W2', 'W3', 'W4', 'W8']
+
+      - name: retained_user_weeks
+        data_tests:
+          - not_null
+
+      - name: eligible_user_weeks
+        data_tests:
+          - not_null
+
+      - name: retention_pct
+        data_tests:
+          - not_null
+
+  - name: mart_customer_engagement
+    columns:
+      - name: company_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: current_contract_value
+        data_tests:
+          - not_null
+
+      - name: active_months_last_3_complete_months
+        data_tests:
+          - not_null
+
+      - name: meaningful_events_last_3_complete_months
+        data_tests:
+          - not_null
+
+      - name: avg_monthly_meaningful_events_last_3_complete_months
+        data_tests:
+          - not_null
+
+      - name: customer_success_review_flag
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [true, false]
